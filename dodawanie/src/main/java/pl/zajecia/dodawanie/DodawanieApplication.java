@@ -10,7 +10,7 @@ public class DodawanieApplication {
         SpringApplication.run(DodawanieApplication.class, args);
     }
 
-    public int added(int a, int b){
+    public long added(long a, long b){
         return a+b;
     }
 }
