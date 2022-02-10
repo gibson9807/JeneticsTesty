@@ -6,7 +6,7 @@ import java.util.stream.Collector;
 import static java.lang.String.format;
 
 public class ItemGA {
-    static int count=0;
+    static int count=-1;
     private final double size;
     private final double value;
     private final int label;

@@ -21,7 +21,7 @@ public class Knapsack2 implements Problem<ISeq<Knapsack2.Item>, BitGene,Double> 
 
     public static final class Item implements Serializable{
        // private static final long serialVersionUID=1L;
-        static int count=0;
+        static int count=-1;
         private final double size;
         private final double value;
         private int label;
@@ -152,7 +152,7 @@ public class Knapsack2 implements Problem<ISeq<Knapsack2.Item>, BitGene,Double> 
         bestString=bestString.replaceAll("[\\D.]" ,"");
        // bestString=bestString.substring(0,itemCount);
         bestString=new StringBuilder(bestString).reverse().toString();
-       // System.out.println("BESTSTRING: "+bestString);
+       //System.out.println("BESTSTRING: "+bestString);
 
         double sumSize=0.0;
         double sumValue=0.0;
