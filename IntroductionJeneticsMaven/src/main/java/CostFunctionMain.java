@@ -1,13 +1,12 @@
 import io.jenetics.util.ISeq;
 
-import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
 public class CostFunctionMain {
 
     //Funkcja kosztu, ktora jako argument dostaje listę itemów i binarny chromosom
-    private static double costFunction(ISeq<ItemGA> itemsGA, boolean[] chromosome){
+    public static double costFunction(ISeq<ItemGA> itemsGA, boolean[] chromosome){
         int iterator=0;
         double sumOfValue=0.0;
         itemsGA.forEach(System.out::println);

@@ -15,13 +15,64 @@ import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 
-public class Knapsack2 implements Problem<ISeq<ItemGA>, BitGene,Double> {
+public class Knapsack3 implements Problem<ISeq<Knapsack3.Item>, BitGene,Double> {
 
-    private final Codec<ISeq<ItemGA>,BitGene> _codec;
+
+    public static final class Item implements Serializable{
+        // private static final long serialVersionUID=1L;
+        static int count=-1;
+        private final double size;
+        private final double value;
+        private int label;
+
+
+        private Item(final double size, final double value) {
+            count=count+1;
+            this.label=count;
+            this.size = Requires.nonNegative(size);
+            this.value = Requires.nonNegative(value);
+
+        }
+
+        public double getSize() {
+            return size;
+        }
+
+        public double getValue() {
+            return value;
+        }
+
+
+        @Override
+        public String toString() {
+            return format("Item[ID=%d,size=%f, value=%f]",label,size,value);
+        }
+
+        public static Item of(final double size, final double value){
+            return new Item(size,value);
+        }
+
+
+        //TU BYLA ZMIANA FUNKCJI random.nextDouble() *100------------------------------------------------------------------------------------------------
+        public static Item random(final Random random){
+            return new Item(random.nextDouble() *100,random.nextDouble() *100);
+        }
+
+        public static Collector<Item,?,Item> toSum(){
+            return Collector.of(
+                    ()->new double[2],
+                    (a,b)->{a[0]+=b.size;a[1]+=b.value;},
+                    (a,b)->{a[0]+=b[0];a[1]+=b[1];return a;},
+                    r->new Item(r[0],r[1])
+            );
+        }
+    }
+
+    private final Codec<ISeq<Item>,BitGene> _codec;
     private final double _knapsackSize;
-    public ISeq<ItemGA> items;
+    public ISeq<Item> items;
 
-    public Knapsack2(final ISeq<ItemGA> items,final double knapsackSize){
+    public Knapsack3(final ISeq<Item> items,final double knapsackSize){
         _codec= Codecs.ofSubSet(items);
         _knapsackSize=knapsackSize;
         this.items=items;
@@ -29,39 +80,45 @@ public class Knapsack2 implements Problem<ISeq<ItemGA>, BitGene,Double> {
 
 
     @Override
-    public Function<ISeq<ItemGA>, Double> fitness() {
-//        return new MyFunction(_knapsackSize);
+    public Function<ISeq<Item>, Double> fitness() {
+       // return new MyFunction(_knapsackSize);
         return items->{
-            final ItemGA sum=items.stream().collect(ItemGA.toSum());
+            final Item sum=items.stream().collect(Item.toSum());
             return sum.size<=_knapsackSize? sum.value : 0;
         };
     }
 
-//    static class MyFunction implements Function<ISeq<Item>, Double> {
-//        double _knapsackSize;
-//        MyFunction(double ns){
-//            _knapsackSize = ns;
-//        }
-//
-//        @Override
-//        public Double apply(ISeq<Item> items) {
+
+    static class MyFunction implements Function<boolean[], Double> {
+        //double _knapsackSize;
+        boolean[] chromosome;
+        MyFunction(boolean[] chromosome){
+            this.chromosome=chromosome;
+        }
+
+        @Override
+        public Double apply(boolean[] booleans) {
+
+
+
 //            final Item sum=items.stream().collect(Item.toSum());
 //            return sum.size<=? sum.value : 0;
-//        }
-//    }
+            return 0.0;
+        }
+    }
 
     @Override
-    public Codec<ISeq<ItemGA>, BitGene> codec() {
+    public Codec<ISeq<Item>, BitGene> codec() {
         return _codec;
     }
 
-    public static Knapsack2 of(final int itemCount,final Random random){
+    public static Knapsack3 of(final int itemCount,final Random random){
         requireNonNull(random);
-        return new Knapsack2(
-                Stream.generate(()->ItemGA.random(random))
-                .limit(itemCount)
-                .collect(ISeq.toISeq()),
-                        itemCount*100.0/3.0
+        return new Knapsack3(
+                Stream.generate(()->Item.random(random))
+                        .limit(itemCount)
+                        .collect(ISeq.toISeq()),
+                itemCount*100.0/3.0
         );
     }
 
@@ -70,7 +127,7 @@ public class Knapsack2 implements Problem<ISeq<ItemGA>, BitGene,Double> {
         //ILOSC ITEMOW
         int itemCount=8;
 
-        final Knapsack2 knapsack=Knapsack2.of(itemCount,new Random(System.currentTimeMillis()));
+        final Knapsack3 knapsack=Knapsack3.of(itemCount,new Random(System.currentTimeMillis()));
 
 
         final Engine<BitGene,Double> engine= Engine.builder(knapsack)
@@ -98,15 +155,15 @@ public class Knapsack2 implements Problem<ISeq<ItemGA>, BitGene,Double> {
         //PRZEKSZTALCENIE best na String, tak, by wykorzystac to do obliczenia sumy size Itemow
         String bestString=best.genotype().toString();
         bestString=bestString.replaceAll("[\\D.]" ,"");
-       // bestString=bestString.substring(0,itemCount);
+        // bestString=bestString.substring(0,itemCount);
         bestString=new StringBuilder(bestString).reverse().toString();
-       //System.out.println("BESTSTRING: "+bestString);
+        //System.out.println("BESTSTRING: "+bestString);
 
         double sumSize=0.0;
         double sumValue=0.0;
         int i=0;
         //WYSWIETLIC ITEMS
-        for(ItemGA item:knapsack.items){
+        for(Item item:knapsack.items){
             char c=bestString.charAt(i);
             if(c=='1') {
                 sumSize += item.getSize();
@@ -122,27 +179,22 @@ public class Knapsack2 implements Problem<ISeq<ItemGA>, BitGene,Double> {
         System.out.println("CHROMOSOME: "+best.genotype().chromosome());
 
 //TABLICA Object
-       Object[] tablica=best.genotype().chromosome().stream().toArray();
+        Object[] tablica=best.genotype().chromosome().stream().toArray();
 
-    boolean[] chromosom=new boolean[tablica.length];
-    int l=0;
+        boolean[] chromosom=new boolean[tablica.length];
+        int l=0;
 
         for(Object o:tablica){
             BitGene b=(BitGene)o;
             chromosom[l]=b.booleanValue();
             l++;
         }
-
+        // System.out.println(Arrays.toString(chromosom));
+        //   Collections.reverse(Arrays.asList(chromosom));
         System.out.println("++++++++++++++++");
         for(boolean b:chromosom){
             System.out.println(b);
         }
-
-//Użycie costFunction
-        double sumofValue;
-       sumofValue= CostFunctionMain.costFunction(knapsack.items,chromosom);
-        System.out.println("COST FUNCTION: "+sumofValue);
-
 
 
     }

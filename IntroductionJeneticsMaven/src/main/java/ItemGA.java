@@ -7,12 +7,12 @@ import static java.lang.String.format;
 
 public class ItemGA {
     static int count=-1;
-    private final double size;
-    private final double value;
-    private final int label;
+     final double size;
+     final double value;
+     final int label;
 
 
-    private ItemGA(final double size, final double value) {
+    public ItemGA(final double size, final double value) {
         count=count+1;
         this.label=count;
         this.size = Requires.nonNegative(size);
