@@ -15,13 +15,13 @@ import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 
-public class Knapsack2 implements Problem<ISeq<ItemGA>, BitGene,Double> {
+public class Knapsack2 implements Problem<ISeq<Knapsack3.Item>, BitGene,Double> {
 
-    private final Codec<ISeq<ItemGA>,BitGene> _codec;
+    private final Codec<ISeq<Knapsack3.Item>,BitGene> _codec;
     private final double _knapsackSize;
-    public ISeq<ItemGA> items;
+    public ISeq<Knapsack3.Item> items;
 
-    public Knapsack2(final ISeq<ItemGA> items,final double knapsackSize){
+    public Knapsack2(final ISeq<Knapsack3.Item> items,final double knapsackSize){
         _codec= Codecs.ofSubSet(items);
         _knapsackSize=knapsackSize;
         this.items=items;
@@ -29,10 +29,10 @@ public class Knapsack2 implements Problem<ISeq<ItemGA>, BitGene,Double> {
 
 
     @Override
-    public Function<ISeq<ItemGA>, Double> fitness() {
+    public Function<ISeq<Knapsack3.Item>, Double> fitness() {
 //        return new MyFunction(_knapsackSize);
         return items->{
-            final ItemGA sum=items.stream().collect(ItemGA.toSum());
+            final Knapsack3.Item sum=items.stream().collect(Knapsack3.Item.toSum());
             return sum.size<=_knapsackSize? sum.value : 0;
         };
     }
@@ -51,14 +51,14 @@ public class Knapsack2 implements Problem<ISeq<ItemGA>, BitGene,Double> {
 //    }
 
     @Override
-    public Codec<ISeq<ItemGA>, BitGene> codec() {
+    public Codec<ISeq<Knapsack3.Item>, BitGene> codec() {
         return _codec;
     }
 
     public static Knapsack2 of(final int itemCount,final Random random){
         requireNonNull(random);
         return new Knapsack2(
-                Stream.generate(()->ItemGA.random(random))
+                Stream.generate(()->Knapsack3.Item.random(random))
                 .limit(itemCount)
                 .collect(ISeq.toISeq()),
                         itemCount*100.0/3.0
@@ -99,14 +99,14 @@ public class Knapsack2 implements Problem<ISeq<ItemGA>, BitGene,Double> {
         String bestString=best.genotype().toString();
         bestString=bestString.replaceAll("[\\D.]" ,"");
        // bestString=bestString.substring(0,itemCount);
-        bestString=new StringBuilder(bestString).reverse().toString();
+       // bestString=new StringBuilder(bestString).reverse().toString();
        //System.out.println("BESTSTRING: "+bestString);
 
         double sumSize=0.0;
         double sumValue=0.0;
         int i=0;
         //WYSWIETLIC ITEMS
-        for(ItemGA item:knapsack.items){
+        for(Knapsack3.Item item:knapsack.items){
             char c=bestString.charAt(i);
             if(c=='1') {
                 sumSize += item.getSize();

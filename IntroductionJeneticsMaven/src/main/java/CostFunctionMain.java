@@ -6,13 +6,13 @@ import java.util.stream.Stream;
 public class CostFunctionMain {
 
     //Funkcja kosztu, ktora jako argument dostaje listę itemów i binarny chromosom
-    public static double costFunction(ISeq<ItemGA> itemsGA, boolean[] chromosome){
+    public static double costFunction(ISeq<Knapsack3.Item> itemsGA, boolean[] chromosome){
         int iterator=0;
         double sumOfValue=0.0;
         itemsGA.forEach(System.out::println);
         for(boolean b:chromosome){
             System.out.println(b+": "+(chromosome.length-iterator-1));
-            ItemGA item= itemsGA.get(chromosome.length-iterator-1);
+            Knapsack3.Item item= itemsGA.get(chromosome.length-iterator-1);
             if(b){
                 sumOfValue+= item.getValue();
             }
@@ -29,7 +29,7 @@ public class CostFunctionMain {
         Random random=new Random(System.currentTimeMillis());
         int itemAmount=8;
         //Utworzenie listy Itemow
-        final ISeq<ItemGA> items= Stream.generate(()-> ItemGA.random(random))
+        final ISeq<Knapsack3.Item> items= Stream.generate(()-> Knapsack3.Item.random(random))
                 .limit(itemAmount)
                 .collect(ISeq.toISeq());
         //Binarny chromosom(przykladowy)

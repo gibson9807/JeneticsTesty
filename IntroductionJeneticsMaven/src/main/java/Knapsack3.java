@@ -21,8 +21,8 @@ public class Knapsack3 implements Problem<ISeq<Knapsack3.Item>, BitGene,Double> 
     public static final class Item implements Serializable{
         // private static final long serialVersionUID=1L;
         static int count=-1;
-        private final double size;
-        private final double value;
+         final double size;
+         final double value;
         private int label;
 
 
