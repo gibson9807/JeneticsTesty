@@ -14,7 +14,7 @@ public class KnapsackItem {
     }
 
     protected static KnapsackItem random(){
-        Random r= RandomRegistry.random();
+        Random r= (Random) RandomRegistry.random();
         return new KnapsackItem(r.nextDouble()*100,r.nextDouble()*100);
     }
 

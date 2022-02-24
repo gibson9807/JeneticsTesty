@@ -1,18 +1,10 @@
 import io.jenetics.*;
 import io.jenetics.engine.*;
-import io.jenetics.internal.collection.ArrayISeq;
 import io.jenetics.util.ISeq;
-
-import java.util.*;
 import java.util.function.Function;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import io.jenetics.BitGene;
-
 import static io.jenetics.engine.EvolutionResult.*;
 import static io.jenetics.engine.Limits.bySteadyFitness;
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
 
 
 public class ISProblem implements Problem<ISeq<ItemGA>, BitGene,Double> {
@@ -47,7 +39,7 @@ public class ISProblem implements Problem<ISeq<ItemGA>, BitGene,Double> {
         return _codec;
     }
 
-    static double myCostaFunction( boolean[] chromosome, double[] data){
+    static double MyCostFunction(boolean[] chromosome, double[] data){
         double sum = 0;
         int count = 0;
         for (int i =0; i<chromosome.length; i++){
@@ -61,21 +53,19 @@ public class ISProblem implements Problem<ISeq<ItemGA>, BitGene,Double> {
 
     public static void main(String[] args) {
         //               0  1  2  3  4  5
-        double[] data = {1, 6, 7, 3, 2, 7};
+        double[] data = {10,-11,-15,-7, -1, -1,0,5};
         ItemGA[] items = new ItemGA[data.length];
         int i = 0;
         for (double d : data){
             items[i] = new ItemGA(i);
-            i++; //Brak tej linijki powodował, że items było pełne nulli
+            i++;
         }
+
+        //IntStream.range(0,data.length).mapToObj( x-> new ItemGA(x)).collect(ISeq.toISeq());
         ISeq<ItemGA> zbiorDlaGA = ISeq.of(items);
-                //IntStream.range(0,data.length).mapToObj( x-> new ItemGA(x)).collect(ISeq.toISeq());
-
-
 
        //final ISProblem knapsack= new ISProblem(zbiorDlaGA, (x)->myCostaFunction(x,data));
         final ISProblem knapsack= new ISProblem(zbiorDlaGA, new MyFunction(data) );
-
 
         final Engine<BitGene,Double> engine= Engine.builder(knapsack)
                 .populationSize(500)
@@ -98,39 +88,7 @@ public class ISProblem implements Problem<ISeq<ItemGA>, BitGene,Double> {
 
         System.out.println(statistics);
         System.out.println(best);
-
-        //PRZEKSZTALCENIE best na String, tak, by wykorzystac to do obliczenia sumy size Itemow
-        String bestString=best.genotype().toString();
-        bestString=bestString.replaceAll("[\\D.]" ,"");
-        // bestString=bestString.substring(0,itemCount);
-        bestString=new StringBuilder(bestString).reverse().toString();
-        //System.out.println("BESTSTRING: "+bestString);
-
-        System.out.println("BEST: "+best.genotype());
-//List<Boolean> lista=best.genotype().stream().collect(Collectors.toList());
-        System.out.println("CHROMOSOME: "+best.genotype().chromosome());
-
-//TABLICA Object
-        Object[] tablica=best.genotype().chromosome().stream().toArray();
-
-        boolean[] chromosom=new boolean[tablica.length];
-        int l=0;
-
-        for(Object o:tablica){
-            BitGene b=(BitGene)o;
-            chromosom[l]=b.booleanValue();
-            l++;
-        }
-
-        System.out.println("++++++++++++++++");
-        for(boolean b:chromosom){
-            System.out.println(b);
-        }
-
     }
-
-
-
 }
 
 class MyFunction implements Function<boolean[],Double> {
@@ -142,7 +100,7 @@ class MyFunction implements Function<boolean[],Double> {
 
     @Override
     public Double apply(boolean[] chromosome) {
-        return ISProblem.myCostaFunction(  chromosome,  data);
+        return ISProblem.MyCostFunction(  chromosome,  data);
     }
 }
 
