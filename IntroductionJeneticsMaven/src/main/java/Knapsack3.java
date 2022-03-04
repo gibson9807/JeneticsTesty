@@ -143,17 +143,17 @@ public class Knapsack3 implements Problem<ISeq<Knapsack3.Item>, BitGene,Double> 
 
         final EvolutionStatistics<Double,?> statistics=EvolutionStatistics.ofNumber();
 
-        final  Phenotype<BitGene,Double> best=engine.stream()
+        final  Genotype<BitGene> best=engine.stream()
                 .limit(bySteadyFitness(15))
                 .limit(100)
                 .peek(statistics)
-                .collect(toBestPhenotype());
+                .collect(toBestGenotype());
 
         System.out.println(statistics);
         System.out.println(best);
 
         //PRZEKSZTALCENIE best na String, tak, by wykorzystac to do obliczenia sumy size Itemow
-        String bestString=best.genotype().toString();
+        String bestString=best.toString();
         bestString=bestString.replaceAll("[\\D.]" ,"");
         // bestString=bestString.substring(0,itemCount);
         bestString=new StringBuilder(bestString).reverse().toString();
@@ -174,12 +174,12 @@ public class Knapsack3 implements Problem<ISeq<Knapsack3.Item>, BitGene,Double> 
         }
         System.out.println("SUM OF SIZE: "+sumSize);
         System.out.println("SUM OF VALUE: "+sumValue);
-        System.out.println("BEST: "+best.genotype());
+        System.out.println("BEST: "+best);
 //List<Boolean> lista=best.genotype().stream().collect(Collectors.toList());
-        System.out.println("CHROMOSOME: "+best.genotype().chromosome());
+        System.out.println("CHROMOSOME: "+best.chromosome());
 
 //TABLICA Object
-        Object[] tablica=best.genotype().chromosome().stream().toArray();
+        Object[] tablica=best.chromosome().stream().toArray();
 
         boolean[] chromosom=new boolean[tablica.length];
         int l=0;
