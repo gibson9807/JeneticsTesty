@@ -1,6 +1,7 @@
 import io.jenetics.*;
 import io.jenetics.engine.*;
-import io.jenetics.internal.util.Requires;
+//JENETICS 7
+//import io.jenetics.internal.util.Requires;
 import io.jenetics.util.ISeq;
 import java.io.Serializable;
 import java.util.*;

@@ -39,7 +39,9 @@ public class ISProblem implements Problem<ISeq<Integer>, BitGene,Double> {
         return _codec;
     }
 
+    static int counter=1;
     static double MyCostFunction(boolean[] chromosome, double[] data){
+        System.out.println("COST FUNCTION: "+counter++);
         double sum = 0;
         int count = 0;
         for (int i =0; i<chromosome.length; i++){
@@ -52,31 +54,28 @@ public class ISProblem implements Problem<ISeq<Integer>, BitGene,Double> {
     }
 
     public static void main(String[] args) {
-        //               0  1  2  3  4  5
-        double[] data = {10,-11,-15,-7, -1, -1,7,5};
-        //ItemGA[] items = new ItemGA[data.length];
+        double[] data = {-15,-7, -1, -1,7,100,200,300};
         Integer[] items = new Integer[data.length];
         int i = 0;
         for (double d : data){
-            items[i] = i;//new ItemGA(i);
+            items[i] = i;
             i++;
         }
 
-        //IntStream.range(0,data.length).mapToObj( x-> new ItemGA(x)).collect(ISeq.toISeq());
         ISeq<Integer> zbiorDlaGA = ISeq.of(items);
 
-       //final ISProblem knapsack= new ISProblem(zbiorDlaGA, (x)->myCostaFunction(x,data));
         final ISProblem knapsack= new ISProblem(zbiorDlaGA,
                 chromosome -> ISProblem.MyCostFunction(  chromosome,  data)
         );
 
         final Engine<BitGene,Double> engine= Engine.builder(knapsack)
-                .populationSize(50)
-                .survivorsSelector(new TournamentSelector<>(5))
+                .executor( Runnable::run)
+                .populationSize(5)
+                .survivorsSelector(new TournamentSelector<>(3))
                 .offspringSelector(new RouletteWheelSelector<>())
                 .alterers(
-                        new Mutator<>(0.115),
-                        new SinglePointCrossover<>(0.20)
+                        new Mutator<>(1.0),
+                        new SinglePointCrossover<>(0.0)
                 ).build();
 
 
@@ -84,8 +83,15 @@ public class ISProblem implements Problem<ISeq<Integer>, BitGene,Double> {
         final EvolutionStatistics<Double,?> statistics=EvolutionStatistics.ofNumber();
 
         final  Phenotype<BitGene,Double> best=engine.stream()
-                .limit(bySteadyFitness(15))
-                .limit(100)
+               // .limit(bySteadyFitness(15))
+                .limit(5)
+                .peek(r-> System.out.println("########CURRENT GEN: "
+                        +r.generation()+
+                        ": "+ r.totalGenerations()+
+                        ": "+r.bestPhenotype()+
+                        " ALTERED: "+r.alterCount()+
+                        " INVALID: "+r.invalidCount()+
+                        " GENOTYPE: "+r.genotypes()))
                 .peek(statistics)
                 .collect(toBestPhenotype());
 
